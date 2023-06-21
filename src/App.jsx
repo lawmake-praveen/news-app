@@ -6,38 +6,37 @@ function App() {
   const [sideBar, setSideBar] = useState(false);
   const [totalArticles, setTotalArticles] = useState(12);
   const [query, setQuery] = useState("India");
+
   const Categories = [
     "India",
     "World",
     "Politics",
     "Business",
     "Sports",
-    "Technology",
-    "Science",
-    "Health",
+    "ScienceAndTechnology",
     "Entertainment",
-    "Environment",
-    "Lifestyle",
-    "Education",
-    "Weather",
-    "Crime",
-    "Automotive",
-    "Travel",
+    "LifeStyle",
   ];
 
   useEffect(() => {
     async function loadNews() {
-      const apiKey = `51003ed9f93f4abca6a97248915311ff`;
-      const BASE_URL = `https://newsapi.org`;
-      const searchNews = `${BASE_URL}/v2/everything?q=${query}&from=2023-05-20&pageSize=${totalArticles}&sortBy=popularity&apiKey=${apiKey}`;
+      const url = `https://bing-news-search1.p.rapidapi.com/news?category=${query}&mkt=en-IN`;
+      const options = {
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key":
+            "9fab679c76msh839a2b807bd8a13p158e0fjsn02e0841c5276",
+          "X-RapidAPI-Host": "bing-news-search1.p.rapidapi.com",
+        },
+      };
 
       try {
-        const response = await fetch(`${searchNews}`);
-        const responseJson = await response.json();
-        setData(responseJson);
+        const response = await fetch(url, options);
+        const result = await response.json();
+        setData(result);
+        console.log(result);
       } catch (error) {
-        console.log(error);
-        alert("API Key is Full");
+        console.error(error);
       }
     }
     setSideBar(false);
@@ -69,26 +68,29 @@ function App() {
       </h2>
       <div className="container">
         {data &&
-          data.articles.map((item) => (
+          data.value.map((item) => (
             <a
               href={item.url}
               className="article-link"
-              key={item.title}
+              key={item.name}
               target="_black"
             >
               <div className="box">
                 <div className="img">
-                  <img src={item.urlToImage} alt={item.title} />
+                  <img
+                    src={item?.image?.thumbnail?.contentUrl}
+                    alt={item.name}
+                  />
                 </div>
                 <div className="text">
-                  <p className="title">{item.title}</p>
-                  <p className="source">{item.author}</p>
+                  <p className="title">{item.name}</p>
+                  <p className="source">{item.provider[0].name}</p>
                 </div>
               </div>
             </a>
           ))}
       </div>
-      <div className="btn-container">
+      {/* <div className="btn-container">
         <button
           className="read-more"
           onClick={() =>
@@ -97,7 +99,7 @@ function App() {
         >
           Read More
         </button>
-      </div>
+      </div> */}
     </main>
   );
 }
